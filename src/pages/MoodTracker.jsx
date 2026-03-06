@@ -3,19 +3,54 @@ import { useState, useEffect } from "react";
 function MoodTracker() {
 
   const [todayMood, setTodayMood] = useState("");
-
-  const moods = ["Happy", "Neutral", "Sad", "Angry"];
+  const [yesterdayMood, setYesterdayMood] = useState("");
+  const [streak, setStreak] = useState(0);
+  const [moodHistory, setMoodHistory] = useState([]);
 
   useEffect(() => {
-    const storedMoods = JSON.parse(localStorage.getItem("moods")) || [];
 
-    const today = new Date().toLocaleDateString();
+    const storedMoods = JSON.parse(localStorage.getItem("moods")) || [];
+    setMoodHistory(storedMoods);
+
+    const today = new Date().toISOString().split("T")[0];
+
+    const yesterdayDate = new Date();
+    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+    const yesterday = yesterdayDate.toISOString().split("T")[0];
 
     const todayEntry = storedMoods.find(entry => entry.date === today);
+    const yesterdayEntry = storedMoods.find(entry => entry.date === yesterday);
 
     if (todayEntry) {
       setTodayMood(todayEntry.mood);
     }
+
+    if (yesterdayEntry) {
+      setYesterdayMood(yesterdayEntry.mood);
+    }
+
+    let currentStreak = 0;
+
+    const sortedMoods = [...storedMoods].sort(
+      (a, b) => new Date(b.date) - new Date(a.date)
+    );
+
+    for (let i = 0; i < sortedMoods.length; i++) {
+
+      const checkDateObj = new Date();
+      checkDateObj.setDate(checkDateObj.getDate() - i);
+
+      const checkDate = checkDateObj.toISOString().split("T")[0];
+
+      if (sortedMoods[i] && sortedMoods[i].date === checkDate) {
+        currentStreak++;
+      } else {
+        break;
+      }
+
+    }
+
+    setStreak(currentStreak);
 
   }, []);
 
@@ -23,7 +58,7 @@ function MoodTracker() {
 
     const storedMoods = JSON.parse(localStorage.getItem("moods")) || [];
 
-    const today = new Date().toLocaleDateString();
+    const today = new Date().toISOString().split("T")[0];
 
     const existingIndex = storedMoods.findIndex(entry => entry.date === today);
 
@@ -39,27 +74,111 @@ function MoodTracker() {
     localStorage.setItem("moods", JSON.stringify(storedMoods));
 
     setTodayMood(mood);
+    setMoodHistory(storedMoods);
   };
 
   return (
-    <div style={{ textAlign: "center", padding: "40px" }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        padding: "50px",
+        minHeight: "80vh",
+        background: "#f4f6fb"
+      }}
+    >
 
-      <h2>How are you feeling today?</h2>
+      <h1 style={{ marginBottom: "10px", color: "#333" }}>
+        Mood Tracker
+      </h1>
 
-      <div style={{ fontSize: "40px", marginTop: "20px" }}>
+      <h2 style={{ color: "#555" }}>
+        How are you feeling today?
+      </h2>
 
-        <span onClick={() => selectMood("Happy")} style={{ cursor: "pointer", margin: "10px" }}>😊</span>
-        <span onClick={() => selectMood("Neutral")} style={{ cursor: "pointer", margin: "10px" }}>😐</span>
-        <span onClick={() => selectMood("Sad")} style={{ cursor: "pointer", margin: "10px" }}>😢</span>
-        <span onClick={() => selectMood("Angry")} style={{ cursor: "pointer", margin: "10px" }}>😡</span>
+      {yesterdayMood && (
+        <p style={{ color: "#666", marginTop: "10px" }}>
+          Yesterday you were <b>{yesterdayMood}</b>. How do you feel today?
+        </p>
+      )}
+
+      <div
+        style={{
+          background: "white",
+          padding: "40px",
+          borderRadius: "15px",
+          boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+          textAlign: "center",
+          marginTop: "30px",
+          width: "350px"
+        }}
+      >
+
+        <p style={{ marginBottom: "15px", fontSize: "18px" }}>
+          🔥 {streak} Day Mindfulness Streak
+        </p>
+
+        <div style={{ fontSize: "50px" }}>
+
+          <span onClick={() => selectMood("Happy")} style={{ cursor: "pointer", margin: "15px" }}>😊</span>
+          <span onClick={() => selectMood("Neutral")} style={{ cursor: "pointer", margin: "15px" }}>😐</span>
+          <span onClick={() => selectMood("Sad")} style={{ cursor: "pointer", margin: "15px" }}>😢</span>
+          <span onClick={() => selectMood("Angry")} style={{ cursor: "pointer", margin: "15px" }}>😡</span>
+
+        </div>
+
+        {todayMood && (
+          <p
+            style={{
+              marginTop: "25px",
+              fontSize: "20px",
+              color: "#444"
+            }}
+          >
+            You are feeling <b>{todayMood}</b> today
+          </p>
+        )}
 
       </div>
 
-      {todayMood && (
-        <p style={{ marginTop: "20px", fontSize: "18px" }}>
-          You are feeling <b>{todayMood}</b> today
-        </p>
-      )}
+      {/* Mood History */}
+
+      <div
+        style={{
+          marginTop: "50px",
+          background: "white",
+          padding: "30px",
+          borderRadius: "12px",
+          width: "350px",
+          boxShadow: "0 8px 20px rgba(0,0,0,0.08)"
+        }}
+      >
+
+        <h3 style={{ marginBottom: "15px" }}>
+          Mood History
+        </h3>
+
+        {moodHistory.length === 0 ? (
+          <p style={{ color: "#777" }}>
+            No moods recorded yet
+          </p>
+        ) : (
+
+          moodHistory
+            .slice()
+            .reverse()
+            .map((entry, index) => (
+
+              <p key={index} style={{ margin: "6px 0" }}>
+                {entry.date} — <b>{entry.mood}</b>
+              </p>
+
+            ))
+
+        )}
+
+      </div>
 
     </div>
   );

@@ -40,3 +40,23 @@ transform:scale(1);
 div:hover {
   transform: translateY(-5px);
 }
+
+.color-empty {
+  fill: #eeeeee;
+}
+
+.color-happy {
+  fill: #2ecc71;
+}
+
+.color-neutral {
+  fill: #f1c40f;
+}
+
+.color-sad {
+  fill: #e67e22;
+}
+
+.color-angry {
+  fill: #e74c3c;
+}

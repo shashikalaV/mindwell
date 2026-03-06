@@ -1,125 +1,102 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function Journal() {
 
   const [entry, setEntry] = useState("");
+  const [entries, setEntries] = useState([]);
 
-  const [history, setHistory] = useState(
-    JSON.parse(localStorage.getItem("journalEntries")) || []
-  );
+  useEffect(() => {
+
+    const storedEntries = JSON.parse(localStorage.getItem("journalEntries")) || [];
+    setEntries(storedEntries);
+
+  }, []);
 
   const saveEntry = () => {
 
-    if(entry.trim() === "") return;
+    if (entry.trim() === "") return;
 
     const newEntry = {
       text: entry,
       date: new Date().toLocaleDateString()
     };
 
-    const updatedHistory = [newEntry, ...history];
+    const updatedEntries = [newEntry, ...entries];
 
-    setHistory(updatedHistory);
+    localStorage.setItem("journalEntries", JSON.stringify(updatedEntries));
 
-    localStorage.setItem(
-      "journalEntries",
-      JSON.stringify(updatedHistory)
-    );
-
+    setEntries(updatedEntries);
     setEntry("");
+
   };
 
   return (
 
-    <div style={{
-      maxWidth:"800px",
-      margin:"auto",
-      marginTop:"40px",
-      padding:"20px"
-    }}>
+    <div style={{maxWidth:"700px", margin:"auto", padding:"40px"}}>
 
-      <h2 style={{textAlign:"center"}}>
-        Daily Journal
-      </h2>
+      <h2 style={{textAlign:"center"}}>Daily Journal</h2>
 
-      <p style={{
-        textAlign:"center",
-        color:"#666"
-      }}>
-        Write your thoughts and reflections
-      </p>
+      <textarea
+        rows="6"
+        placeholder="Write about your thoughts today..."
+        value={entry}
+        onChange={(e)=>setEntry(e.target.value)}
+        style={{
+          width:"100%",
+          padding:"15px",
+          marginTop:"20px",
+          borderRadius:"10px",
+          border:"1px solid #ccc",
+          fontSize:"16px"
+        }}
+      />
 
-      <div style={{
-        background:"#fff",
-        padding:"20px",
-        borderRadius:"10px",
-        boxShadow:"0 4px 10px rgba(0,0,0,0.1)",
-        marginTop:"20px"
-      }}>
+      <button
+        onClick={saveEntry}
+        style={{
+          marginTop:"15px",
+          padding:"10px 20px",
+          border:"none",
+          borderRadius:"8px",
+          background:"#4CAF50",
+          color:"white",
+          cursor:"pointer"
+        }}
+      >
+        Save Entry
+      </button>
 
-        <textarea
-          rows="5"
-          placeholder="Write your thoughts..."
-          value={entry}
-          onChange={(e)=>setEntry(e.target.value)}
-          style={{
-            width:"100%",
-            padding:"10px",
-            borderRadius:"8px",
-            border:"1px solid #ddd",
-            resize:"none"
-          }}
-        />
+      <h3 style={{marginTop:"40px"}}>Journal History</h3>
 
-        <button
-          onClick={saveEntry}
-          style={{
-            marginTop:"15px",
-            padding:"10px 20px",
-            background:"#4CAF50",
-            color:"white",
-            border:"none",
-            borderRadius:"6px",
-            cursor:"pointer"
-          }}
-        >
-          Save Entry
-        </button>
+      {entries.length === 0 ? (
+        <p>No journal entries yet</p>
+      ) : (
 
-      </div>
+        entries.map((item, index) => (
 
-      <h3 style={{marginTop:"40px"}}>
+          <div
+            key={index}
+            style={{
+              background:"#f9f9f9",
+              padding:"15px",
+              borderRadius:"10px",
+              marginTop:"15px",
+              boxShadow:"0 2px 5px rgba(0,0,0,0.1)"
+            }}
+          >
 
-        Journal History
+            <small style={{color:"#666"}}>{item.date}</small>
 
-      </h3>
+            <p style={{marginTop:"8px"}}>{item.text}</p>
 
-      {history.map((item,index)=>(
+          </div>
 
-        <div
-          key={index}
-          style={{
-            background:"#fff",
-            padding:"15px",
-            borderRadius:"10px",
-            marginTop:"15px",
-            boxShadow:"0 3px 8px rgba(0,0,0,0.1)"
-          }}
-        >
+        ))
 
-          <p>{item.text}</p>
-
-          <small style={{color:"#777"}}>
-
-            {item.date}
-
-          </small>
-
-        </div>
-
-      ))}
+      )}
 
     </div>
+
   );
 }
 

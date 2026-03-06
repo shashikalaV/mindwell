@@ -1,128 +1,105 @@
 import { useEffect, useState } from "react";
 import {
-LineChart,
-Line,
-XAxis,
-YAxis,
-Tooltip,
-CartesianGrid,
-ResponsiveContainer
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip
 } from "recharts";
 
-function Analytics(){
+import CalendarHeatmap from "react-calendar-heatmap";
 
-const [data,setData] = useState([]);
+function Analytics() {
 
-const moodValue = {
-Happy:4,
-Neutral:3,
-Sad:2,
-Angry:1
-};
+  const [data, setData] = useState([]);
 
-const moodEmoji = {
-Happy:"😊",
-Neutral:"😐",
-Sad:"😢",
-Angry:"😡"
-};
+  const moodValue = {
+    Happy: 4,
+    Neutral: 3,
+    Sad: 2,
+    Angry: 1
+  };
 
-useEffect(()=>{
+  useEffect(() => {
 
-const moods = JSON.parse(localStorage.getItem("moods")) || [];
+    const storedMoods = JSON.parse(localStorage.getItem("moods")) || [];
 
-const formatted = moods.map((entry)=>({
-date: entry.date,
-mood: moodValue[entry.mood],
-label: entry.mood
-}));
+    const formattedData = storedMoods.map((entry) => ({
+      date: entry.date,
+      mood: moodValue[entry.mood]
+    }));
 
-setData(formatted);
+    setData(formattedData);
 
-},[]);
+  }, []);
 
-return(
+  return (
+    <div style={{ textAlign: "center", padding: "40px" }}>
 
-<div style={{
-width:"80%",
-margin:"auto",
-marginTop:"40px"
-}}>
+      <h2>Your Mood Analytics</h2>
 
-<h2 style={{textAlign:"center"}}>Mood Analytics</h2>
-<p style={{textAlign:"center"}}>Your emotional trend</p>
+      {data.length === 0 ? (
+        <p>No mood data yet</p>
+      ) : (
 
-{/* WEEKLY SUMMARY */}
+        <>
+        
+        {/* LINE GRAPH */}
 
-<div style={{
-marginTop:"30px",
-padding:"20px",
-background:"#f5f7fa",
-borderRadius:"10px"
-}}>
+        <LineChart width={700} height={350} data={data}>
 
-<h3>This Week</h3>
+          <CartesianGrid stroke="#ddd" />
 
-{data.length === 0 ? (
-<p>No mood history yet</p>
-) : (
+          <XAxis dataKey="date" />
 
-data.map((item,index)=>(
-<p key={index}>
-{item.date} — {moodEmoji[item.label]} {item.label}
-</p>
-))
+          <YAxis
+            ticks={[1,2,3,4]}
+            tickFormatter={(value)=>{
+              if(value===4) return "Happy"
+              if(value===3) return "Neutral"
+              if(value===2) return "Sad"
+              if(value===1) return "Angry"
+            }}
+          />
 
-)}
+          <Tooltip />
 
-</div>
+          <Line
+            type="monotone"
+            dataKey="mood"
+            stroke="#6C63FF"
+            strokeWidth={4}
+            dot={{ r:6 }}
+          />
 
+        </LineChart>
 
-{/* GRAPH */}
+        {/* HEATMAP */}
 
-<div style={{marginTop:"40px"}}>
+        <h3 style={{marginTop:"60px"}}>Mood Calendar</h3>
 
-{data.length === 0 ? (
+        <CalendarHeatmap
+          startDate={new Date(new Date().setMonth(new Date().getMonth() - 3))}
+          endDate={new Date()}
+          values={data}
+          classForValue={(value) => {
+            if (!value) {
+              return "color-empty";
+            }
+            if (value.mood === 4) return "color-happy";
+            if (value.mood === 3) return "color-neutral";
+            if (value.mood === 2) return "color-sad";
+            if (value.mood === 1) return "color-angry";
+          }}
+        />
 
-<p style={{textAlign:"center"}}>Track your mood to see analytics</p>
+        </>
 
-) : (
+      )}
 
-<ResponsiveContainer width="100%" height={300}>
-
-<LineChart data={data}>
-
-<CartesianGrid strokeDasharray="3 3" />
-
-<XAxis dataKey="date" />
-
-<YAxis
-domain={[1,4]}
-ticks={[1,2,3,4]}
-/>
-
-<Tooltip />
-
-<Line
-type="monotone"
-dataKey="mood"
-stroke="#6C63FF"
-strokeWidth={3}
-dot={{ r:6 }}
-/>
-
-</LineChart>
-
-</ResponsiveContainer>
-
-)}
-
-</div>
-
-</div>
-
-);
-
+    </div>
+  );
 }
 
 export default Analytics;

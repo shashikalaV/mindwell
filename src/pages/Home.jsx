@@ -1,11 +1,21 @@
-import { Link } from "react-router-dom";
-
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import meditation from "../assets/meditation.svg";
 import journal from "../assets/journal.svg";
 import mood from "../assets/mood.svg";
 import breathing from "../assets/breathing.svg";
 
 function Home() {
+  const navigate = useNavigate();
+  useEffect(() => {
+
+  const user = localStorage.getItem("mindwellUser");
+
+  if (!user) {
+    navigate("/login");
+  }
+
+}, []);
   return (
     <div style={{ textAlign: "center", padding: "40px" }}>
       

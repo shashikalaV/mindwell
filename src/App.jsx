@@ -8,6 +8,7 @@ import Journal from "./pages/Journal";
 import MoodTracker from "./pages/MoodTracker";
 import Analytics from "./pages/Analytics";
 import Breathing from "./pages/Breathing";
+import Login from "./pages/Login";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
 
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
         <Route path="/journal" element={<Journal />} />
         <Route path="/mood" element={<MoodTracker />} />
         <Route path="/analytics" element={<Analytics />} />
