@@ -2,24 +2,33 @@ import { Link } from "react-router-dom";
 
 function Navbar() {
   return (
-    <nav style={{
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "15px 40px",
-      background: "#5C8DF6",
-      color: "white"
-    }}>
-      <h2>MindWell</h2>
+    <nav
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "15px 40px",
+        background: "#2F3E63",
+        color: "white"
+      }}
+    >
+      <h2 style={{ margin: 0 }}>MindWell</h2>
 
-      <div>
-        <Link to="/" style={{margin:"15px", color:"white", textDecoration:"none"}}>Home</Link>
-        <Link to="/journal" style={{margin:"15px", color:"white", textDecoration:"none"}}>Journal</Link>
-        <Link to="/analytics" style={{margin:"15px", color:"white", textDecoration:"none"}}>Analytics</Link>
-        <Link to="/breathing" style={{margin:"15px", color:"white", textDecoration:"none"}}>Breathing</Link>
+      <div style={{ display: "flex", gap: "20px" }}>
+        <Link style={linkStyle} to="/">Home</Link>
+        <Link style={linkStyle} to="/mood">Track Mood</Link>
+        <Link style={linkStyle} to="/journal">Journal</Link>
+        <Link style={linkStyle} to="/analytics">Analytics</Link>
+        <Link style={linkStyle} to="/breathing">Breathing</Link>
       </div>
     </nav>
   );
 }
+
+const linkStyle = {
+  color: "white",
+  textDecoration: "none",
+  fontWeight: "500"
+};
 
 export default Navbar;
