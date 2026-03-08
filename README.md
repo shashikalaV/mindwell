@@ -46,5 +46,3 @@ npm start
 ## 👨💻 Author
 
 Developed as part of a learning project to explore React and mental wellness tracking applications.
-
-
