@@ -3,30 +3,26 @@ import { useState, useEffect } from "react";
 function MoodTracker() {
 
   const [todayMood, setTodayMood] = useState("");
-  const [yesterdayMood, setYesterdayMood] = useState("");
   const [streak, setStreak] = useState(0);
   const [moodHistory, setMoodHistory] = useState([]);
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
+
+    const user = JSON.parse(localStorage.getItem("user"));
+    if(user){
+      setUserName(user.username);
+    }
 
     const storedMoods = JSON.parse(localStorage.getItem("moods")) || [];
     setMoodHistory(storedMoods);
 
     const today = new Date().toISOString().split("T")[0];
 
-    const yesterdayDate = new Date();
-    yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-    const yesterday = yesterdayDate.toISOString().split("T")[0];
-
     const todayEntry = storedMoods.find(entry => entry.date === today);
-    const yesterdayEntry = storedMoods.find(entry => entry.date === yesterday);
 
     if (todayEntry) {
       setTodayMood(todayEntry.mood);
-    }
-
-    if (yesterdayEntry) {
-      setYesterdayMood(yesterdayEntry.mood);
     }
 
     let currentStreak = 0;
@@ -94,14 +90,8 @@ function MoodTracker() {
       </h1>
 
       <h2 style={{ color: "#555" }}>
-        How are you feeling today?
+        Hello {userName}, how are you feeling today?
       </h2>
-
-      {yesterdayMood && (
-        <p style={{ color: "#666", marginTop: "10px" }}>
-          Yesterday you were <b>{yesterdayMood}</b>. How do you feel today?
-        </p>
-      )}
 
       <div
         style={{

@@ -7,28 +7,42 @@ function Journal() {
 
   useEffect(() => {
 
-    const storedEntries = JSON.parse(localStorage.getItem("journalEntries")) || [];
+    const storedEntries = JSON.parse(localStorage.getItem("journals")) || [];
     setEntries(storedEntries);
 
   }, []);
 
   const saveEntry = () => {
 
-    if (entry.trim() === "") return;
+  if (entry.trim() === "") return;
 
-    const newEntry = {
+  const today = new Date().toISOString().split("T")[0];
+
+  const storedEntries = JSON.parse(localStorage.getItem("journals")) || [];
+
+  const existingIndex = storedEntries.findIndex(
+    e => e.date === today
+  );
+
+  if (existingIndex !== -1) {
+
+    storedEntries[existingIndex].text = entry;
+
+  } else {
+
+    storedEntries.push({
       text: entry,
-      date: new Date().toLocaleDateString()
-    };
+      date: today
+    });
 
-    const updatedEntries = [newEntry, ...entries];
+  }
 
-    localStorage.setItem("journalEntries", JSON.stringify(updatedEntries));
+  localStorage.setItem("journals", JSON.stringify(storedEntries));
 
-    setEntries(updatedEntries);
-    setEntry("");
+  setEntries(storedEntries);
+  setEntry("");
 
-  };
+};
 
   return (
 
