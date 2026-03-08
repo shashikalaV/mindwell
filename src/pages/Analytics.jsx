@@ -75,25 +75,6 @@ function Analytics() {
 
         </LineChart>
 
-        {/* HEATMAP */}
-
-        <h3 style={{marginTop:"60px"}}>Mood Calendar</h3>
-
-        <CalendarHeatmap
-          startDate={new Date(new Date().setMonth(new Date().getMonth() - 3))}
-          endDate={new Date()}
-          values={data}
-          classForValue={(value) => {
-            if (!value) {
-              return "color-empty";
-            }
-            if (value.mood === 4) return "color-happy";
-            if (value.mood === 3) return "color-neutral";
-            if (value.mood === 2) return "color-sad";
-            if (value.mood === 1) return "color-angry";
-          }}
-        />
-
         </>
 
       )}
