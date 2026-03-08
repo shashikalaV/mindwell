@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -31,10 +31,13 @@ function App() {
 
       <Routes>
 
+        {/* Default route */}
+        <Route path="/" element={<Navigate to="/login" />} />
+
         <Route path="/login" element={<Login />} />
 
         <Route
-          path="/"
+          path="/home"
           element={
             <ProtectedRoute>
               <Home />
