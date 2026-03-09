@@ -26,7 +26,7 @@ if(account.username === username && account.password === password){
 
 localStorage.setItem("mindwell_user",JSON.stringify(account));
 
-navigate("/");
+navigate("/home");
 
 }else{
 alert("Invalid username or password");
@@ -53,7 +53,7 @@ localStorage.setItem("mindwell_account",JSON.stringify(account));
 
 localStorage.setItem("mindwell_user",JSON.stringify(account));
 
-navigate("/");
+navigate("/home");
 
 };
 

@@ -25,7 +25,7 @@ function ProtectedRoute({ children }) {
 function App() {
 
   return (
-    <Router>
+    <HashRouter>
 
       <Navbar />
 
@@ -94,7 +94,7 @@ function App() {
 
       <Footer />
 
-    </Router>
+    </HashRouter>
   );
 }
 
