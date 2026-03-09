@@ -32,7 +32,14 @@ function App() {
       <Routes>
 
         {/* Default route */}
-        <Route path="/" element={<Navigate to="/login" />} />
+        <Route
+          path="/"
+          element={
+            JSON.parse(localStorage.getItem("mindwell_user"))
+          ? <Navigate to="/home" />
+          : <Navigate to="/login" />
+          }
+       />
 
         <Route path="/login" element={<Login />} />
 

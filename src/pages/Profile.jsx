@@ -52,9 +52,13 @@ export default function Profile() {
   };
 
   const logout = () => {
-    localStorage.removeItem("loggedIn");
-    window.location.href = "/login";
-  };
+
+  // remove logged in user
+  localStorage.removeItem("mindwell_user");
+
+  // redirect to login page using HashRouter path
+  window.location.href = "#/login";
+};
 
   const deleteAccount = () => {
 
