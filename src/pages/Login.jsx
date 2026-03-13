@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login(){
@@ -13,49 +13,119 @@ const [password,setPassword] = useState("");
 const [name,setName] = useState("");
 const [bio,setBio] = useState("");
 
-const login = () => {
+/* AUTO FILL USERNAME */
 
-const account = JSON.parse(localStorage.getItem("mindwell_account"));
+useEffect(()=>{
 
-if(!account){
-alert("Account not found. Please create one.");
+const storedUser = JSON.parse(localStorage.getItem("mindwell_user"));
+
+if(storedUser){
+setUsername(storedUser.username);
+}
+
+},[]);
+
+
+/* LOGIN FUNCTION */
+
+const login = async ()=>{
+
+if(!username || !password){
+alert("Please enter username and password");
 return;
 }
 
-if(account.username === username && account.password === password){
+try{
 
-localStorage.setItem("mindwell_user",JSON.stringify(account));
+const response = await fetch("http://127.0.0.1:5000/login",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+username: username.trim(),
+password: password.trim()
+})
+});
 
-navigate("/home");
+const data = await response.json();
 
-}else{
-alert("Invalid username or password");
+console.log("LOGIN RESPONSE:",data);
+
+if(response.status === 400){
+alert(data.message);
+return;
+}
+
+if(response.status === 500){
+alert("Server error");
+return;
+}
+
+/* SAVE USER */
+
+localStorage.setItem("mindwell_user",JSON.stringify(data.user));
+
+/* FORCE NAVIGATION */
+
+window.location.href = "/mindwell/#/home";
+
+}catch(error){
+
+console.log(error);
+alert("Cannot connect to server");
+
 }
 
 };
 
-const createAccount = () => {
+
+/* CREATE ACCOUNT */
+
+const createAccount = async ()=>{
 
 if(!username || !password || !name){
 alert("Please fill required fields");
 return;
 }
 
-const account = {
-username,
-password,
-name,
-bio,
-joined:new Date().toLocaleDateString()
-};
+try{
 
-localStorage.setItem("mindwell_account",JSON.stringify(account));
+const response = await fetch("http://127.0.0.1:5000/register",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+username: username.trim(),
+password: password.trim(),
+name: name.trim(),
+bio
+})
+});
 
-localStorage.setItem("mindwell_user",JSON.stringify(account));
+const data = await response.json();
+
+console.log("REGISTER RESPONSE:",data);
+
+if(response.status === 400){
+alert(data.message);
+return;
+}
+
+localStorage.setItem("mindwell_user",JSON.stringify(data.user));
 
 navigate("/home");
 
+}catch(error){
+
+console.log(error);
+alert("Server error");
+
+}
+
 };
+
 
 return(
 
@@ -114,17 +184,22 @@ style={{...inputStyle,height:"80px"}}
 )}
 
 <button
+type="button"
 onClick={isLogin ? login : createAccount}
 style={buttonStyle}
 >
+
 {isLogin ? "Login" : "Create Account"}
+
 </button>
 
 <p
 onClick={()=>setIsLogin(!isLogin)}
 style={{marginTop:"15px",cursor:"pointer",color:"#6C63FF"}}
 >
+
 {isLogin ? "Create new account" : "Back to Login"}
+
 </p>
 
 </div>
@@ -134,6 +209,7 @@ style={{marginTop:"15px",cursor:"pointer",color:"#6C63FF"}}
 );
 
 }
+
 
 const inputStyle={
 width:"100%",

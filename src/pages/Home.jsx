@@ -6,16 +6,19 @@ import mood from "../assets/mood.svg";
 import breathing from "../assets/breathing.svg";
 
 function Home() {
+
   const navigate = useNavigate();
+
   useEffect(() => {
 
-  const user = localStorage.getItem("mindwellUser");
+    const user = localStorage.getItem("mindwell_user");
 
-  if (!user) {
-    navigate("/login");
-  }
+    if (!user) {
+      navigate("/login");
+    }
 
-}, []);
+  }, []);
+
   return (
     <div style={{ textAlign: "center", padding: "40px" }}>
       
@@ -40,8 +43,6 @@ function Home() {
         }}
       >
 
-        {/* JOURNAL CARD */}
-
         <Link to="/journal" style={{ textDecoration: "none" }}>
           <div style={cardStyle}>
             <img src={journal} width="80" />
@@ -49,8 +50,6 @@ function Home() {
             <p>Write daily reflections and thoughts</p>
           </div>
         </Link>
-
-        {/* MOOD CARD */}
 
         <Link to="/mood" style={{ textDecoration: "none" }}>
           <div style={cardStyle}>
@@ -60,8 +59,6 @@ function Home() {
           </div>
         </Link>
 
-        {/* ANALYTICS CARD */}
-
         <Link to="/analytics" style={{ textDecoration: "none" }}>
           <div style={cardStyle}>
             <img src={meditation} width="80" />
@@ -69,8 +66,6 @@ function Home() {
             <p>View mood trends over time</p>
           </div>
         </Link>
-
-        {/* BREATHING CARD */}
 
         <Link to="/breathing" style={{ textDecoration: "none" }}>
           <div style={cardStyle}>

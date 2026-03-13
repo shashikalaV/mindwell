@@ -11,18 +11,24 @@ import Breathing from "./pages/Breathing";
 import Login from "./pages/Login";
 import Profile from "./pages/Profile";
 
+
+/* PROTECTED ROUTE */
+
 function ProtectedRoute({ children }) {
 
-  const user = JSON.parse(localStorage.getItem("mindwell_user"));
+  const user = localStorage.getItem("mindwell_user");
 
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/login" replace />;
   }
 
   return children;
 }
 
+
 function App() {
+
+  const user = localStorage.getItem("mindwell_user");
 
   return (
     <HashRouter>
@@ -35,11 +41,11 @@ function App() {
         <Route
           path="/"
           element={
-            JSON.parse(localStorage.getItem("mindwell_user"))
-          ? <Navigate to="/home" />
-          : <Navigate to="/login" />
+            user
+            ? <Navigate to="/home" replace />
+            : <Navigate to="/login" replace />
           }
-       />
+        />
 
         <Route path="/login" element={<Login />} />
 

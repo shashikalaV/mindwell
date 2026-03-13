@@ -17,7 +17,7 @@ export default function Profile() {
 
   useEffect(() => {
 
-    const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+    const storedUser = JSON.parse(localStorage.getItem("mindwell_user")) || {};
 
     setUser(storedUser);
     setUsername(storedUser.username || "");
@@ -34,44 +34,63 @@ export default function Profile() {
 
   }, []);
 
-  const handleSave = () => {
+  const handleSave = async () => {
 
-    const updatedUser = {
-      ...user,
-      username,
-      bio,
-      image
-    };
+  const storedUser = JSON.parse(localStorage.getItem("mindwell_user"));
 
-    localStorage.setItem("user", JSON.stringify(updatedUser));
+  try {
 
-    setUser(updatedUser);
+    const response = await fetch("http://127.0.0.1:5000/updateProfile", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+  username: user.username,
+  newUsername: username,
+  bio: bio,
+  image: image
+})
+    });
+
+    const data = await response.json();
+
+    localStorage.setItem("mindwell_user", JSON.stringify(data.user));
+
+    setUser(data.user);
+
     setEditMode(false);
 
     alert("Profile updated successfully!");
-  };
+
+  } catch (error) {
+
+    console.log(error);
+    alert("Profile update failed");
+
+  }
+
+};
 
   const logout = () => {
 
-  // remove logged in user
-  localStorage.removeItem("mindwell_user");
+localStorage.removeItem("mindwell_user");
 
-  // redirect to login page using HashRouter path
-  window.location.href = "#/login";
+window.location.href = "#/login";
+
 };
 
-  const deleteAccount = () => {
+const deleteAccount = () => {
 
-    if (window.confirm("Delete your account permanently?")) {
+const confirmDelete = window.confirm("Delete your account permanently?");
 
-      localStorage.removeItem("user");
-      localStorage.removeItem("moods");
-      localStorage.removeItem("journals");
-      localStorage.removeItem("breathingSessions");
+if(!confirmDelete) return;
 
-      window.location.href = "/signup";
-    }
-  };
+localStorage.removeItem("mindwell_user");
+
+window.location.href = "#/login";
+
+};
 
   return (
 
@@ -90,33 +109,33 @@ export default function Profile() {
             style={{ display: "none" }}
             onChange={(e) => {
 
-              const file = e.target.files[0];
+  const file = e.target.files[0];
 
-              if (file) {
+  if (!file) return;
 
-                const reader = new FileReader();
+  const reader = new FileReader();
 
-                reader.onloadend = () => {
+  reader.onloadend = () => {
 
-                  const uploadedImage = reader.result;
+    const uploadedImage = reader.result;
 
-                  setImage(uploadedImage);
+    const storedUser = JSON.parse(localStorage.getItem("mindwell_user")) || {};
 
-                  const storedUser = JSON.parse(localStorage.getItem("user")) || {};
+    const updatedUser = {
+      ...storedUser,
+      image: uploadedImage
+    };
 
-                  const updatedUser = {
-                    ...storedUser,
-                    image: uploadedImage
-                  };
+    localStorage.setItem("mindwell_user", JSON.stringify(updatedUser));
 
-                  localStorage.setItem("user", JSON.stringify(updatedUser));
+    setUser(updatedUser);
+    setImage(uploadedImage);
 
-                  setUser(updatedUser);
-                };
+  };
 
-                reader.readAsDataURL(file);
-              }
-            }}
+  reader.readAsDataURL(file);
+
+}}
           />
 
           <img

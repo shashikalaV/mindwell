@@ -25,7 +25,7 @@ function Breathing(){
   }
    useEffect(()=>{
 
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = JSON.parse(localStorage.getItem("mindwell_user"));
   if(user){
     setUserName(user.username);
   }
