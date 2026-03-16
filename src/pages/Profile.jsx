@@ -40,17 +40,17 @@ export default function Profile() {
 
   try {
 
-    const response = await fetch("http://127.0.0.1:5000/updateProfile", {
+    const response = await fetch("http://localhost:5000/updateProfile", {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-  username: user.username,
-  newUsername: username,
-  bio: bio,
-  image: image
-})
+      username: user.username,
+      newUsername: username,
+      bio: bio,
+      image: image
+      })
     });
 
     const data = await response.json();
@@ -103,40 +103,58 @@ window.location.href = "#/login";
         <div className="profile-left">
 
           <input
-            type="file"
-            id="profileUpload"
-            accept="image/*"
-            style={{ display: "none" }}
-            onChange={(e) => {
+  type="file"
+  id="profileUpload"
+  accept="image/*"
+  style={{ display: "none" }}
+  onChange={(e) => {
 
-  const file = e.target.files[0];
+    const file = e.target.files[0];
+    if (!file) return;
 
-  if (!file) return;
+    const reader = new FileReader();
 
-  const reader = new FileReader();
+    reader.onloadend = async () => {
 
-  reader.onloadend = () => {
+      const uploadedImage = reader.result;
 
-    const uploadedImage = reader.result;
+      setImage(uploadedImage);
 
-    const storedUser = JSON.parse(localStorage.getItem("mindwell_user")) || {};
+      try {
 
-    const updatedUser = {
-      ...storedUser,
-      image: uploadedImage
+        const storedUser = JSON.parse(localStorage.getItem("mindwell_user"));
+
+        const response = await fetch("http://localhost:5000/updateProfile", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            username: storedUser.username,
+            newUsername: storedUser.username,
+            bio: storedUser.bio,
+            image: uploadedImage
+          })
+        });
+
+        const data = await response.json();
+
+        localStorage.setItem("mindwell_user", JSON.stringify(data.user));
+        setUser(data.user);
+
+      } catch (error) {
+
+        console.log(error);
+        alert("Image update failed");
+
+      }
+
     };
 
-    localStorage.setItem("mindwell_user", JSON.stringify(updatedUser));
+    reader.readAsDataURL(file);
 
-    setUser(updatedUser);
-    setImage(uploadedImage);
-
-  };
-
-  reader.readAsDataURL(file);
-
-}}
-          />
+  }}
+/>
 
           <img
             src={image || "https://via.placeholder.com/150"}
@@ -150,12 +168,9 @@ window.location.href = "#/login";
           <p>{user.bio}</p>
 
           {!editMode && (
-            <button
-              className="edit-btn"
-              onClick={() => setEditMode(true)}
-            >
+            <button className="logout-btn" onClick={() => setEditMode(true)} style={{marginTop:"10px"}}>
               Edit Profile
-            </button>
+           </button>
           )}
 
         </div>

@@ -103,12 +103,16 @@ app.put("/updateProfile", async (req,res)=>{
 
 try{
 
-const {username,bio,image} = req.body;
+const {username,newUsername,bio,image} = req.body;
 
 const updatedUser = await User.findOneAndUpdate(
-{username},
-{bio,image},
-{new:true}
+{ username: username },
+{
+username: newUsername || username,
+bio: bio,
+image: image
+},
+{ new:true }
 );
 
 res.json({
@@ -124,7 +128,6 @@ res.status(500).json({message:"Profile update failed"});
 }
 
 });
-
 /* SERVER */
 
 app.listen(5000,()=>{
